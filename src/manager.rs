@@ -76,6 +76,14 @@ impl Handle {
     }
 }
 
+impl Clone for Handle {
+    fn clone(&self) -> Self {
+        Handle {
+            tx: self.tx.clone(),
+        }
+    }
+}
+
 type Sender = mpsc::UnboundedSender<Message>;
 
 /// Manager is the main entry point, it keeps track of the

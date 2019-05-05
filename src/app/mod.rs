@@ -5,6 +5,8 @@ use failure::Error;
 use future::lazy;
 use tokio::prelude::*;
 
+mod inf;
+
 type Result<T> = std::result::Result<T, Error>;
 
 /// init start init command, immediately monitor all services
@@ -39,6 +41,16 @@ pub fn init(config: &str) -> Result<()> {
             handle.monitor(name, config);
         }
 
+        // start user interface server
+        let listener = match inf::listener(handle) {
+            Ok(listener) => listener,
+            Err(err) => {
+                println!("failed to start user interface listener: {}", err);
+                return Ok(());
+            }
+        };
+
+        tokio::spawn(listener);
         Ok(())
     }));
 
