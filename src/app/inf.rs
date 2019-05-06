@@ -8,9 +8,16 @@ type Result<T> = std::result::Result<T, Error>;
 use crate::manager::Handle;
 
 fn handler(socket: UnixStream) -> impl Future<Item = (), Error = ()> {
-    let framed = Framed::new(socket, LinesCodec::new());
+    let (sink, stream) = Framed::new(socket, LinesCodec::new()).split();
+    stream
+        .fold(sink, |sink, line: String| {
+            println!("received: {}", line);
+            sink.send("received".to_string())
+            //Ok(())
+        })
+        .map(|_| ())
+        .map_err(|e| ())
 
-    future::ok(())
 }
 
 pub fn listener(handle: Handle) -> Result<impl Future<Item = (), Error = ()>> {
