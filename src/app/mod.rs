@@ -19,7 +19,14 @@ pub fn init(config: &str) -> Result<()> {
             err, file
         );
         settings::Walk::Continue
-    })?;
+    });
+
+    let configs = match configs {
+        Ok(configs) => configs,
+        Err(err) => {
+            bail!("failed to open config directory {}: {}", config, err);
+        }
+    };
 
     // start the tokio runtime, start the process manager
     // and monitor all configured services
