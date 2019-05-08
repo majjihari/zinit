@@ -1,3 +1,8 @@
+#[macro_use]
+extern crate failure;
+#[macro_use]
+extern crate serde_json;
+
 use clap::{App, Arg, SubCommand};
 
 mod app;
@@ -5,9 +10,6 @@ mod app;
 mod manager;
 #[allow(dead_code)]
 mod settings;
-
-#[macro_use]
-extern crate failure;
 
 fn main() {
     let matches = App::new("zinit")
@@ -26,10 +28,21 @@ fn main() {
                 )
                 .about("run in init mode, start and maintain configured services"),
         )
+        .subcommand(
+            SubCommand::with_name("status")
+                .arg(
+                    Arg::with_name("service")
+                        .value_name("DIR")
+                        .required(false)
+                        .help("show status for this service"),
+                )
+                .about("show service status or all if service is empty"),
+        )
         .get_matches();
 
     let result = match matches.subcommand() {
         ("init", Some(matches)) => app::init(matches.value_of("config").unwrap()),
+        ("status", Some(matches)) => app::status(matches.value_of("service")),
         _ => {
             // TODO: replace with a call to default command
             // this now can be `init` but may be a `status` command

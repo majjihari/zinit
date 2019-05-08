@@ -63,3 +63,5 @@ pub fn init(config: &str) -> Result<()> {
 
     Ok(())
 }
+
+pub use inf::status;
