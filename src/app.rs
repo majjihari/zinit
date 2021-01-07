@@ -18,9 +18,9 @@ type Result<T> = std::result::Result<T, Error>;
 /// that are defined under the config directory
 pub fn init(buffer: usize, config: &str, debug: bool) -> Result<()> {
     // load config
-    if !debug && std::process::id() != 1 {
-        bail!("can only run as pid 1");
-    }
+//    if !debug && std::process::id() != 1 {
+  //      bail!("can only run as pid 1");
+    //}
     info!("starting init mhpr");
     match std::env::set_current_dir(config) {
         Ok(_) => {}
@@ -59,6 +59,7 @@ pub fn init(buffer: usize, config: &str, debug: bool) -> Result<()> {
         // manager given the configuration
         let handle = manager.run();
 
+        info!("loop through config mhpr");
         for (name, config) in configs.into_iter() {
             if let Err(err) = handle.monitor(name, config) {
                 error!("failed to monitor service: {}", err);
