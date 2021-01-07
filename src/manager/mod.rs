@@ -644,6 +644,8 @@ impl Manager {
 
 	info!("mod.rs run() tokio::spawn(future) mhpr");
         tokio::spawn(future);
+
+	info!("mod.rs run() Handle { inner } mhpr");
         Handle { inner }
     }
 }
