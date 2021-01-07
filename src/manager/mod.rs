@@ -382,10 +382,14 @@ impl Manager {
         // service state, and only actually re-spawn if the target
         // is up.
 
+	info!("re-spawn called with name {:?} mhpr", name);
+
         let process = match self.processes.get(&name) {
             Some(process) => process,
             None => return,
         };
+
+	info!("print process info name={:?}, target={:?}, state={:?} mhpr", name, process.target, process.state);
 
         match process.state {
             State::Running | State::Spawned => {}
@@ -605,6 +609,7 @@ impl Manager {
 
     /// process different message types
     fn process(&mut self, msg: Message) {
+	info!("process called with msg {:?} mhpr", msg);
         match msg {
             Message::Exit(name, status) => self.on_exit(name, status),
             Message::Spawn(name) => self.os_spawn(name),
