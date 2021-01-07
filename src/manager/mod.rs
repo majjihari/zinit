@@ -236,14 +236,23 @@ impl Manager {
 
     /// exec a service given the name
     fn exec(&mut self, name: String) {
+	
+	info!("mod.rs exec() called mhpr");
+
         let mut process = self.processes.get_mut(&name).unwrap();
 
         let tx = self.tx.clone();
         process.state = State::Spawned;
+
+	info!("mod.rs exec() reading config mhpr");
         let config = process.config.clone();
+
+	info!("mod.rs exec() testing config as service mhpr");
         let test = config.test_as_service();
 
         let service = name.clone();
+
+	info!("mod.rs exec() child info mhpr");
         let child = match self.pm.lock().unwrap().child(name.clone(), config) {
             Ok((pid, child)) => {
                 // update the process pid
@@ -264,9 +273,12 @@ impl Manager {
             }
         };
 
-        let service = name.clone();
+        let service = name.clone();	
+
         let child = child
             .and_then(move |status| {
+
+		info!("mod.rs exec() send child status to process table mhpr");
                 // once child exits, we send the status to process table
                 tx.send(Message::Exit(service, status))
                     .map_err(|e| format_err!("{}", e))
@@ -276,6 +288,7 @@ impl Manager {
                 println!("failed exec process: {}", e);
             });
 
+	info!("mod.rs exec() start the child mhpr");
         tokio::spawn(child);
 
         let tx = self.tx.clone();
