@@ -613,17 +613,26 @@ impl Manager {
 
     /// run moves the manager, and return a handle.
     pub fn run(mut self) -> Handle {
+
+	info!("mod.rs run() called mhpr");
         let rx = match self.rx.take() {
             Some(rx) => rx,
             None => panic!("manager is already running"),
         };
+
+	info!("mod.rs run() start process table mhpr");
 
         //start the process table
         tokio::spawn(self.pm.lock().unwrap().run());
 
         let mgr = Arc::new(Mutex::new(self));
         // start the process manager main loop
+
+	info!("mod.rs run() start process manager mhpr");
+
         let inner = Arc::clone(&mgr);
+
+	info!("mod.rs run() rx for_each mhpr");
         let future = rx
             .for_each(move |msg| {
                 mgr.lock().unwrap().process(msg);
@@ -633,6 +642,7 @@ impl Manager {
                 println!("error: {}", e);
             });
 
+	info!("mod.rs run() tokio::spawn(future) mhpr");
         tokio::spawn(future);
         Handle { inner }
     }
