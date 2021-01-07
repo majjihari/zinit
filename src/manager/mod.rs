@@ -1,3 +1,5 @@
+use tokio::io;
+
 use crate::ring::RingLog;
 use failure::Error;
 use nix::sys::signal;
@@ -635,6 +637,7 @@ impl Manager {
 	info!("mod.rs run() rx for_each mhpr");
         let future = rx
             .for_each(move |msg| {
+		info!("msg in loop {:?}", msg);
                 mgr.lock().unwrap().process(msg);
                 Ok(())
             })
@@ -643,9 +646,20 @@ impl Manager {
             });
 
 	info!("mod.rs run() tokio::spawn(future) mhpr");
-        tokio::spawn(future);
+//        tokio::spawn(future);
 
-	info!("mod.rs run() Handle { inner } mhpr");
+
+//	let make_twelve = || {
+//		use futures::future::ok;
+
+	     // We don't need to put our `Future` inside of a `Box` here.
+//	     ok(5).join(ok(7)).map(|(x, y)| x + y)
+//	 };
+
+	tokio::spawn(future);
+
+	info!("mod.rs run() Handle inner mhpr");
         Handle { inner }
     }
+ 
 }
