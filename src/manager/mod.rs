@@ -639,6 +639,7 @@ impl Manager {
             .for_each(move |msg| {
 		info!("msg in loop {:?}", msg);
                 mgr.lock().unwrap().process(msg);
+		info!("process called successfully mhpr");
                 Ok(())
             })
             .map_err(|e| {
