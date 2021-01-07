@@ -1,4 +1,3 @@
-use tokio::io;
 
 use crate::ring::RingLog;
 use failure::Error;
@@ -237,7 +236,7 @@ impl Manager {
     /// exec a service given the name
     fn exec(&mut self, name: String) {
 	
-	info!("mod.rs exec() called mhpr");
+	info!("mod.rs exec() name={:?}  mhpr", name);
 
         let mut process = self.processes.get_mut(&name).unwrap();
 
@@ -247,12 +246,15 @@ impl Manager {
 	info!("mod.rs exec() reading config mhpr");
         let config = process.config.clone();
 
-	info!("mod.rs exec() testing config as service mhpr");
+	info!("mod.rs exec() confif={:?} mhpr", config);
+
         let test = config.test_as_service();
+
+	info!("mod.rs test={:?} mhpr", test);
 
         let service = name.clone();
 
-	info!("mod.rs exec() child info mhpr");
+	info!("mod.rs exec() service={:?} mhpr", service);
         let child = match self.pm.lock().unwrap().child(name.clone(), config) {
             Ok((pid, child)) => {
                 // update the process pid
@@ -260,7 +262,9 @@ impl Manager {
                 process.pid = pid;
                 child
             }
-            Err(_) => {
+            Err(err) => {
+
+		info!("mod.rs exec() error={:?}", err);
                 // failed to spawn child, this is probably an
                 // un-fixable error. we set status to failure and exit
                 // todo: add error to the failure
