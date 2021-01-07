@@ -91,6 +91,8 @@ impl ProcessManager {
         if let Log::Ring = log {
             self.ring(id, &mut child)?
         };
+
+
         let (sender, receiver) = oneshot::channel::<WaitStatus>();
 
         self.ps.lock().unwrap().insert(child.id(), sender);
@@ -99,11 +101,15 @@ impl ProcessManager {
     }
 
     fn ring(&mut self, id: String, ps: &mut Child) -> Result<()> {
+
+
+	info!("pm.rs ring() id={:?} ps={:?}", id, ps);
         let out = match ps.stdout.take() {
             Some(out) => out,
             None => bail!("process stdout not piped"),
         };
 
+	info!("pm.rs ring() out={:?}", out);
         let err = match ps.stderr.take() {
             Some(err) => err,
             None => bail!("process stderr not piped"),
