@@ -27,6 +27,7 @@ pub fn init(buffer: usize, config: &str, debug: bool) -> Result<()> {
         Err(e) => bail!("{}: {}", config, e),
     }
 
+    info!("load_dir mhpr");
     let configs = settings::load_dir(".", |file, err| {
         println!(
             "encountered err {} while loading file {:?}. skipping!",
@@ -35,6 +36,7 @@ pub fn init(buffer: usize, config: &str, debug: bool) -> Result<()> {
         settings::Walk::Continue
     })?;
 
+    info!("log mhpr");
     let log = Arc::new(RingLog::new(buffer));
 
     // start the tokio runtime, start the process manager
@@ -43,8 +45,12 @@ pub fn init(buffer: usize, config: &str, debug: bool) -> Result<()> {
     // We need to start the unix socket server that will
     // receive and handle user management commands (start, stop, status, etc...)
     tokio::run(lazy(move || {
+
+	info!("tokio manager mhpr");
         // creating a new instance from the process manager
         let manager = manager::Manager::new(Arc::clone(&log));
+
+	info!("tokio manager.run() mhpr");
 
         // running the manager returns a handle that we can
         // use to actually control the process manager
