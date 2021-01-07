@@ -82,7 +82,12 @@ impl ProcessManager {
         cmd: &mut Command,
         log: Log,
     ) -> Result<(u32, impl Future<Item = WaitStatus, Error = Error>)> {
+
+	info!("pm.rs cmd() id={:?} cmd={:?} mhpr", id, cmd);
         let mut child = cmd.spawn()?;
+
+	info!("pm.rs cmd() child={:?}", child);
+
         if let Log::Ring = log {
             self.ring(id, &mut child)?
         };
@@ -118,6 +123,9 @@ impl ProcessManager {
         id: String,
         service: Service,
     ) -> Result<(u32, impl Future<Item = WaitStatus, Error = Error>)> {
+
+
+	info!("pm.rs child() id={:?}, service={:?} mhpr", id, service);
         let args = match shlex::split(&service.exec) {
             Some(args) => args,
             _ => bail!("invalid command line"),
